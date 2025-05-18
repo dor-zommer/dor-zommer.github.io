@@ -1,0 +1,446 @@
+import React, { useState } from 'react';
+import { Calendar, BarChart2, Users, Target, Clock, Flag } from 'lucide-react';
+
+const GanttChart = () => {
+  // State for the selected view
+  const [selectedMonth, setSelectedMonth] = useState('all');
+  const [hoveredTask, setHoveredTask] = useState(null);
+
+  // Define the timeline range
+  const startDate = new Date(2025, 4, 15); // May 15, 2025
+  const endDate = new Date(2025, 6, 15);   // July 15, 2025
+
+  // Define the main phases of the project with enhanced styling
+  const phases = [
+    {
+      id: 1,
+      name: "הכנה",
+      description: "תכנון וארגון כל המשאבים הדרושים",
+      icon: <Clock className="w-5 h-5" />,
+      startDate: new Date(2025, 4, 15), // May 15
+      endDate: new Date(2025, 4, 30),   // May 30
+      color: "#4CAF50", // Green
+      gradient: "from-green-500 to-green-600",
+      tasks: [
+        { name: "הכנת לוח זמנים מפורט", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 20) },
+        { name: "חלוקת תקציב - 40 אלף ₪", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 20) },
+        { name: "הכנת מסרים מותאמים לכל קהל יעד", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 25) },
+        { name: "הקמת מערכת מדידה ומעקב", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 25) }
+      ]
+    },
+    {
+      id: 2,
+      name: "הכנת תוכן",
+      description: "יצירת חומרים ויזואליים וטקסטואליים",
+      icon: <BarChart2 className="w-5 h-5" />,
+      startDate: new Date(2025, 4, 15), // May 15
+      endDate: new Date(2025, 4, 30),   // May 30
+      color: "#2196F3", // Blue
+      gradient: "from-blue-500 to-blue-600",
+      tasks: [
+        { name: "פיתוח 3 סרטונים", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 25) },
+        { name: "עיצוב גרפיקות ומדי התקדמות", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 25) },
+        { name: "בניית דף נחיתה", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 28) },
+        { name: "הכנת תבניות לרשתות חברתיות", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 28) }
+      ]
+    },
+    {
+      id: 3,
+      name: "הפעלת שגרירים",
+      description: "גיוס והנעת תומכים לקידום המהלך",
+      icon: <Users className="w-5 h-5" />,
+      startDate: new Date(2025, 4, 20), // May 20
+      endDate: new Date(2025, 4, 30),   // May 30
+      color: "#9C27B0", // Purple
+      gradient: "from-purple-500 to-purple-600",
+      tasks: [
+        { name: "גיוס שגרירים", startDate: new Date(2025, 4, 20), endDate: new Date(2025, 4, 25) },
+        { name: "הכנת ערכת תוכן לשגרירים", startDate: new Date(2025, 4, 20), endDate: new Date(2025, 4, 28) },
+        { name: "תדרוך שגרירים", startDate: new Date(2025, 4, 28), endDate: new Date(2025, 4, 30) },
+        { name: "גיוס משפיענים - יעד 10,000 חשיפות", startDate: new Date(2025, 4, 20), endDate: new Date(2025, 4, 30) }
+      ]
+    },
+    {
+      id: 4,
+      name: "השקה",
+      description: "תחילת הקמפיין באופן רשמי",
+      icon: <Flag className="w-5 h-5" />,
+      startDate: new Date(2025, 4, 31), // May 31
+      endDate: new Date(2025, 5, 1),   // June 1
+      color: "#FF9800", // Orange
+      gradient: "from-orange-500 to-orange-600",
+      tasks: [
+        { name: "הודעת השקה לרשימות דיוור", startDate: new Date(2025, 4, 30), endDate: new Date(2025, 4, 31) },
+        { name: "הודעה לעיתונות", startDate: new Date(2025, 4, 31), endDate: new Date(2025, 5, 1) },
+        { name: "הפעלת שגרירים", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 5, 2) },
+        { name: "השקת קמפיין ממומן", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 5, 2) }
+      ]
+    },
+    {
+      id: 5,
+      name: "הרצת קמפיין",
+      description: "פעילות שוטפת לאורך תקופת הקמפיין",
+      icon: <Target className="w-5 h-5" />,
+      startDate: new Date(2025, 5, 1), // June 1
+      endDate: new Date(2025, 6, 15),  // July 15
+      color: "#F44336", // Red
+      gradient: "from-red-500 to-red-600",
+      tasks: [
+        { name: "ניהול פרסום שוטף ברשתות החברתיות", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) },
+        { name: "הפעלת תוכנית יח\"צ", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) },
+        { name: "עדכון שגרירים שבועי", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) },
+        { name: "עדכון חומרים לפי הצורך", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) }
+      ]
+    },
+    {
+      id: 6,
+      name: "מדידה ושיפור",
+      description: "בחינת ביצועים ועדכון אסטרטגיה",
+      icon: <BarChart2 className="w-5 h-5" />,
+      startDate: new Date(2025, 5, 1), // June 1
+      endDate: new Date(2025, 6, 15),  // July 15
+      color: "#673AB7", // Deep Purple
+      gradient: "from-indigo-500 to-indigo-600",
+      tasks: [
+        { name: "מעקב יומי אחר תוצאות", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) },
+        { name: "פגישות סטטוס שבועיות", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) },
+        { name: "התאמת מסרים לפי ביצועים", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) },
+        { name: "איתור וטיפול בחסמים", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 6, 15) }
+      ]
+    },
+    {
+      id: 7,
+      name: "אבני דרך מרכזיות",
+      description: "נקודות ציון משמעותיות בקמפיין",
+      icon: <Flag className="w-5 h-5" />,
+      color: "#000000", // Black
+      gradient: "from-gray-800 to-gray-900",
+      tasks: [
+        { name: "התחלת הכנות", startDate: new Date(2025, 4, 15), endDate: new Date(2025, 4, 15), milestone: true },
+        { name: "השלמת תכנים", startDate: new Date(2025, 4, 25), endDate: new Date(2025, 4, 25), milestone: true },
+        { name: "השקה", startDate: new Date(2025, 5, 1), endDate: new Date(2025, 5, 1), milestone: true },
+        { name: "מדידת אמצע", startDate: new Date(2025, 5, 15), endDate: new Date(2025, 5, 15), milestone: true },
+        { name: "סיום", startDate: new Date(2025, 6, 15), endDate: new Date(2025, 6, 15), milestone: true }
+      ]
+    }
+  ];
+
+  // Helper function to calculate dates and positions
+  const getDaysInRange = (start, end) => {
+    const days = [];
+    let currentDate = new Date(start);
+    while (currentDate <= end) {
+      days.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return days;
+  };
+
+  // Filter phases by selected month
+  const filteredPhases = () => {
+    if (selectedMonth === 'all') return phases;
+    const monthIndex = selectedMonth === 'may' ? 4 : selectedMonth === 'june' ? 5 : 6;
+    return phases.map(phase => {
+      return {
+        ...phase,
+        tasks: phase.tasks.filter(task => {
+          const startMonth = task.startDate.getMonth();
+          const endMonth = task.endDate.getMonth();
+          return startMonth === monthIndex || endMonth === monthIndex || (startMonth < monthIndex && endMonth > monthIndex);
+        })
+      };
+    }).filter(phase => phase.tasks.length > 0);
+  };
+
+  // Calculate the days in the range
+  const allDays = getDaysInRange(startDate, endDate);
+  
+  // Start date for the view (depending on selection)
+  const viewStartDate = selectedMonth === 'may' ? 
+    new Date(2025, 4, 15) : 
+    selectedMonth === 'june' ? 
+    new Date(2025, 5, 1) : 
+    selectedMonth === 'july' ? 
+    new Date(2025, 6, 1) : 
+    startDate;
+  
+  // End date for the view (depending on selection)
+  const viewEndDate = selectedMonth === 'may' ? 
+    new Date(2025, 4, 31) : 
+    selectedMonth === 'june' ? 
+    new Date(2025, 5, 30) : 
+    selectedMonth === 'july' ? 
+    new Date(2025, 6, 15) : 
+    endDate;
+  
+  // View days
+  const viewDays = getDaysInRange(viewStartDate, viewEndDate);
+
+  // Calculate the left position for a task bar
+  const calculateLeftPosition = (date) => {
+    const diffTime = Math.abs(date - viewStartDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return `${(diffDays / viewDays.length) * 100}%`;
+  };
+
+  // Calculate the width for a task bar
+  const calculateWidth = (start, end) => {
+    const adjustedStart = start < viewStartDate ? viewStartDate : start;
+    const adjustedEnd = end > viewEndDate ? viewEndDate : end;
+    const diffTime = Math.abs(adjustedEnd - adjustedStart);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include the end day
+    return `${(diffDays / viewDays.length) * 100}%`;
+  };
+
+  // Format date as DD/MM
+  const formatDate = (date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    return `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}`;
+  };
+
+  // Group days by week for the timeline
+  const weeks = [];
+  let currentWeek = [];
+  viewDays.forEach((day, index) => {
+    currentWeek.push(day);
+    if (day.getDay() === 6 || index === viewDays.length - 1) { // Saturday or last day
+      weeks.push([...currentWeek]);
+      currentWeek = [];
+    }
+  });
+
+  // Get month name in Hebrew
+  const getHebrewMonth = (date) => {
+    const months = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+    return months[date.getMonth()];
+  };
+  
+  // Format month range display
+  const formatMonthRange = () => {
+    if (selectedMonth === 'may') {
+      return "מאי 2025";
+    } else if (selectedMonth === 'june') {
+      return "יוני 2025";
+    } else if (selectedMonth === 'july') {
+      return "יולי 2025";
+    } else {
+      return "מאי - יולי 2025";
+    }
+  };
+  
+  // Task detail component for hover
+  const TaskDetail = ({ task, phase }) => {
+    return (
+      <div className="absolute z-10 bg-white shadow-lg rounded-lg p-3 w-64 border border-gray-200" 
+           style={{ top: "100%", right: "0" }}>
+        <div className="font-bold text-lg" style={{ color: phase.color }}>{task.name}</div>
+        <div className="text-gray-600 my-1">
+          {formatDate(task.startDate)} - {formatDate(task.endDate)}
+        </div>
+        <div className="mt-1">
+          <div className="text-xs text-gray-500">שלב: {phase.name}</div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div dir="rtl" className="flex flex-col min-h-screen bg-gray-50 w-full overflow-x-auto p-4">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">קמפיין גיוס מו"לים</h1>
+          <div className="text-lg text-gray-600 font-medium">איחוד העיתונות העצמאית</div>
+        </div>
+      
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg shadow flex items-center space-x-3 space-x-reverse">
+            <div className="bg-blue-500 p-2 rounded-full text-white">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-700">תקופת הקמפיין</h4>
+              <p className="text-gray-600">45 יום (1 ביוני - 15 ביולי)</p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg shadow flex items-center space-x-3 space-x-reverse">
+            <div className="bg-green-500 p-2 rounded-full text-white">
+              <BarChart2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-700">תקציב</h4>
+              <p className="text-gray-600">40 אלף ₪</p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg shadow flex items-center space-x-3 space-x-reverse">
+            <div className="bg-purple-500 p-2 rounded-full text-white">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-700">יעדים</h4>
+              <p className="text-gray-600">1,000-2,000 מו"לים חדשים | 100 אלף ₪ בהוראות קבע</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* View selector */}
+        <div className="flex flex-wrap justify-center mb-6 gap-2">
+          <button 
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedMonth === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200'}`}
+            onClick={() => setSelectedMonth('all')}
+          >
+            כל התקופה
+          </button>
+          <button 
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedMonth === 'may' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200'}`}
+            onClick={() => setSelectedMonth('may')}
+          >
+            מאי
+          </button>
+          <button 
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedMonth === 'june' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200'}`}
+            onClick={() => setSelectedMonth('june')}
+          >
+            יוני
+          </button>
+          <button 
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedMonth === 'july' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 hover:bg-gray-200'}`}
+            onClick={() => setSelectedMonth('july')}
+          >
+            יולי
+          </button>
+        </div>
+        
+        <div className="text-lg font-medium text-center text-gray-700 mb-2">{formatMonthRange()}</div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        {/* Timeline */}
+        <div className="mb-4 border-b">
+          {/* Month headers */}
+          <div className="grid grid-cols-1" style={{ marginRight: '200px' }}>
+            <div className="flex">
+              {viewDays.length > 0 && (
+                <div className="flex items-center border-b border-gray-300" style={{ width: '100%' }}>
+                  {['מאי', 'יוני', 'יולי'].map((month, idx) => {
+                    if (
+                      (selectedMonth === 'all') ||
+                      (selectedMonth === 'may' && month === 'מאי') ||
+                      (selectedMonth === 'june' && month === 'יוני') ||
+                      (selectedMonth === 'july' && month === 'יולי')
+                    ) {
+                      // Calculate month width based on days
+                      const monthDays = viewDays.filter(day => {
+                        const m = day.getMonth();
+                        return (m === 4 && month === 'מאי') || (m === 5 && month === 'יוני') || (m === 6 && month === 'יולי');
+                      });
+                      const width = `${(monthDays.length / viewDays.length) * 100}%`;
+                      return (
+                        <div key={month} className="font-bold text-center py-2" style={{ width, minWidth: '50px' }}>
+                          {month}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Day headers */}
+          <div className="grid grid-cols-1" style={{ marginRight: '200px' }}>
+            <div className="flex">
+              {viewDays.map((day, idx) => (
+                <div
+                  key={idx}
+                  className={`text-center py-1 text-xs ${day.getDay() === 5 || day.getDay() === 6 ? 'bg-gray-100' : ''}`}
+                  style={{ width: `${100 / viewDays.length}%`, minWidth: '20px' }}
+                >
+                  {day.getDate()}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Gantt rows */}
+        <div className="overflow-auto">
+          {filteredPhases().map((phase) => (
+            <div key={phase.id} className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-md" style={{ backgroundColor: phase.color }}>
+                  {phase.icon}
+                </div>
+                <h3 className="text-lg font-semibold">{phase.name}</h3>
+                <span className="text-sm text-gray-500">{phase.description}</span>
+              </div>
+              
+              {phase.tasks.map((task, taskIdx) => (
+                <div key={taskIdx} className="grid grid-cols-1 mb-3">
+                  <div className="flex">
+                    <div className="w-48 text-right px-2 py-1 font-medium flex-shrink-0 flex items-center">
+                      {task.name}
+                    </div>
+                    <div className="relative flex-grow h-8 bg-gray-100 rounded" style={{ marginLeft: '4px' }}>
+                      {task.milestone ? (
+                        <div
+                          className="absolute h-8 w-8 transform -translate-y-1/2 top-1/2 rounded-full flex items-center justify-center text-white"
+                          style={{
+                            backgroundColor: phase.color,
+                            left: calculateLeftPosition(task.startDate),
+                            marginLeft: '-16px', // Half of the width to center
+                          }}
+                          onMouseEnter={() => setHoveredTask({ task, phase })}
+                          onMouseLeave={() => setHoveredTask(null)}
+                        >
+                          ★
+                        </div>
+                      ) : (
+                        <div
+                          className="absolute h-7 rounded-md flex items-center px-2 text-white text-sm font-medium shadow-md cursor-pointer hover:opacity-90 transition-opacity relative"
+                          style={{
+                            background: `linear-gradient(to right, ${phase.color}, ${phase.color})`,
+                            left: calculateLeftPosition(task.startDate),
+                            width: calculateWidth(task.startDate, task.endDate),
+                            top: '2px',
+                          }}
+                          onMouseEnter={() => setHoveredTask({ task, phase })}
+                          onMouseLeave={() => setHoveredTask(null)}
+                        >
+                          <span className="truncate">{task.name}</span>
+                          {hoveredTask && hoveredTask.task === task && (
+                            <TaskDetail task={task} phase={phase} />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 className="text-lg font-semibold mb-4">מקרא</h3>
+        <div className="flex flex-wrap gap-4">
+          {phases.filter(phase => phase.id !== 7).map((phase) => (
+            <div key={phase.id} className="flex items-center bg-gray-50 p-2 rounded-lg">
+              <div className="w-4 h-4 mr-2 rounded" style={{ backgroundColor: phase.color }}></div>
+              <span className="font-medium">{phase.name}</span>
+            </div>
+          ))}
+          <div className="flex items-center bg-gray-50 p-2 rounded-lg">
+            <div className="w-4 h-4 mr-2 rounded-full" style={{ backgroundColor: '#000000' }}></div>
+            <span className="font-medium">אבן דרך</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GanttChart;
